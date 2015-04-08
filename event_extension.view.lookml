@@ -35,7 +35,6 @@
         , count(*) over (partition by domain_userid, domain_sessionidx rows between unbounded preceding and unbounded following) as events_in_session
       from base
 
-# coalesce(domain_userid,'') || coalesce(domain_sessionidx,'')
 
   fields:
 
