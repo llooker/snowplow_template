@@ -8,6 +8,6 @@
     - join: session
       type: inner
       relationship: many_to_one
-      sql_on: ${event.domain_user_id} = ${session.domain_user_id} AND ${event.domain_session_index} = ${session.domain_session_index}
+      sql_on: event.${user.domain_user_id} = ${session.domain_user_id} AND ${event.domain_session_index} = ${session.domain_session_index}
       
 - explore: session

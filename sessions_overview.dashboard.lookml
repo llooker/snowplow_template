@@ -81,11 +81,11 @@
     title: Sessions per User
     type: single_value
     model: snowplow
-    explore: snowplow
-    measures: [user.sessions_per_user]
+    explore: session
+    measures: [session.sessions_per_user]
     listen:
       date: session.start_time
-    sorts: [user.sessions_per_user desc]
+    sorts: [session.sessions_per_user desc]
     limit: 500
     font_size: medium
     height: 4
@@ -95,11 +95,11 @@
     title: Minutes per Session
     type: single_value
     model: snowplow
-    explore: event
-    measures: [session.minutes_per_session]
+    explore: session
+    measures: [session.average_duration_minutes]
     listen:
       date: session.start_time
-    sorts: [session.minutes_per_session desc]
+    sorts: [session.average_duration_minutes desc]
     limit: 500
     font_size: medium
     height: 4
@@ -109,7 +109,7 @@
     title: Sessions Bounced vs. Not Bounced
     type: looker_pie
     model: snowplow
-    explore: event
+    explore: session
     dimensions: [session.bounced]
     measures: [session.count]
     listen:
@@ -124,7 +124,7 @@
     title: Sessions by New vs. Repeat User
     type: looker_pie
     model: snowplow
-    explore: event
+    explore: session
     dimensions: [session.is_first_session]
     measures: [session.count]
     listen:
@@ -140,7 +140,7 @@
     title: Daily Sessions by Bounced (Y/N)
     type: looker_area
     model: snowplow
-    explore: event
+    explore: session
     dimensions: [session.bounced, session.start_date]
     pivots: [session.bounced]
     measures: [session.count]
@@ -172,10 +172,10 @@
     title: Daily Sessions by New Visitor (Y/N)
     type: looker_area
     model: snowplow
-    explore: event
+    explore: session
     dimensions: [session.is_first_session, session.start_date]
     pivots: [session.is_first_session]
-    measures: [session.approximate_count]
+    measures: [session.count]
     listen:
       date: session.start_time
     sorts: [session.start_date desc]

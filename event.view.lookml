@@ -500,19 +500,19 @@
 
   - measure: funnel.event_1_count_sessions
     type: number
-    sql: COUNT(DISTINCT CASE WHEN {% condition event_1 %} ${event_type} {% endcondition %} THEN ${session.id} END)
+    sql: COUNT(DISTINCT CASE WHEN {% condition event_1 %} ${event_type} {% endcondition %} THEN ${user.domain_user_id} || ${domain_session_index} END)
 
   - measure: funnel.event_2_count_sessions
     type: number
-    sql: COUNT(DISTINCT CASE WHEN {% condition event_2 %} ${event_type} {% endcondition %} THEN ${session.id} END)
+    sql: COUNT(DISTINCT CASE WHEN {% condition event_2 %} ${event_type} {% endcondition %} THEN ${user.domain_user_id} || ${domain_session_index} END)
 
   - measure: funnel.event_3_count_sessions
     type: number
-    sql: COUNT(DISTINCT CASE WHEN {% condition event_3 %} ${event_type} {% endcondition %} THEN ${session.id} END)
+    sql: COUNT(DISTINCT CASE WHEN {% condition event_3 %} ${event_type} {% endcondition %} THEN ${user.domain_user_id} || ${domain_session_index} END)
 
   - measure: funnel.event_4_count_sessions
     type: number
-    sql: COUNT(DISTINCT CASE WHEN {% condition event_4 %} ${event_type} {% endcondition %} THEN ${session.id} END)
+    sql: COUNT(DISTINCT CASE WHEN {% condition event_4 %} ${event_type} {% endcondition %} THEN ${user.domain_user_id} || ${domain_session_index} END)
 
 
 # SETS #

@@ -67,7 +67,7 @@
     type: number
     sql: DATEDIFF(MINUTES, ${TABLE}.start_at, ${TABLE}.end_at)    
 
-  - dimension: is_bounce
+  - dimension: bounced
     type: yesno
     sql: ${number_of_events} = 1
 
@@ -92,8 +92,10 @@
     decimals: 2
     sql: ${duration_minutes}
 
-#   - measure: sessions_per_user
-#     type: 
+  - measure: sessions_per_user
+    type: number
+    sql: ${count}::float/NULLIF(${user.count},0)
+    decimals: 2
 
   - measure: user.count
     type: count_distinct
