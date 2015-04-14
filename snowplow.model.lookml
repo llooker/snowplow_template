@@ -5,7 +5,9 @@
 
 - explore: event
   joins:
-    - join: event_extension
+    - join: session
       type: inner
-      relationship: one_to_one
-      foreign_key: event_id
+      relationship: many_to_one
+      sql_on: ${event.domain_user_id} = ${session.domain_user_id} AND ${event.domain_session_index} = ${session.domain_session_index}
+      
+- explore: session

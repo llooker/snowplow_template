@@ -51,11 +51,11 @@
     title: Total Sessions
     type: single_value
     model: snowplow
-    explore: event
-    measures: [session.approximate_count]
+    explore: session
+    measures: [session.count]
     listen:
       date: session.start_time
-    sorts: [session.approximate_count desc]
+    sorts: [session.count desc]
     limit: 500
     value_format: '[>=1000000] #,##0.0,,"M";[<1000] 0;#,##0.0,"k"'
     font_size: medium
@@ -66,11 +66,11 @@
     title: Unique Users
     type: single_value
     model: snowplow
-    explore: event
-    measures: [user.approximate_count]
+    explore: session
+    measures: [user.count]
     listen:
       date: session.start_time
-    sorts: [user.approximate_count desc]
+    sorts: [user.count desc]
     limit: 500
     value_format: '[>=1000000] #,##0.0,,"M";[<1000] 0;#,##0.0,"k"'
     font_size: medium
@@ -81,7 +81,7 @@
     title: Sessions per User
     type: single_value
     model: snowplow
-    explore: event
+    explore: snowplow
     measures: [user.sessions_per_user]
     listen:
       date: session.start_time

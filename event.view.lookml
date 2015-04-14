@@ -76,7 +76,7 @@
     
   - measure: count
     type: count
-    drill_fields: [event_id, event_type, user.domain_user_id, user.id, collector_time]
+    drill_fields: count_drill*
 
 
 # SNOWPLOW VERSION FIELDS #
@@ -99,11 +99,13 @@
 
 # USER FIELDS #
 
-  - dimension: session.domain_session_sequence_number
+  - dimension: domain_session_index
     type: number
+    hidden: true
     sql: ${TABLE}.domain_sessionidx
     
-  - dimension: session.domain_session_id
+  - dimension: domain_session_id
+    hidden: true
     sql: ${TABLE}.domain_sessionid
 
   - dimension: user.domain_user_id
@@ -117,21 +119,7 @@
 
   - dimension: user.network_user_id
     sql: ${TABLE}.network_userid
-    
-  - dimension: session.is_first_session
-    type: yesno
-    sql: ${session.domain_session_sequence_number} = 1
 
-  - measure: user.count
-    type: count_distinct
-    sql: ${user.domain_user_id}
-    drill_fields: [user.domain_user_id, user.id, user.ip_address, location.city, location.country]
-    
-  - measure: user.approximate_count
-    type: number
-    sql: APPROXIMATE COUNT(DISTINCT ${user.domain_user_id})
-    drill_fields: [user.domain_user_id, user.id, user.ip_address, location.city, location.country]
-    
   - measure: user.events_per_user
     type: number
     decimals: 2
@@ -484,13 +472,13 @@
   - dimension: structured_event.value
     type: number
     sql: ${TABLE}.se_value
-    
+
 
 # CUSTOM UNSTRUCTURED EVENTS FIELDS #
 
   - dimension: unstructured_event.json
     sql: ${TABLE}.unstruct_event
-    
+
 
 # FUNNEL FIELDS #
   
@@ -525,4 +513,15 @@
   - measure: funnel.event_4_count_sessions
     type: number
     sql: COUNT(DISTINCT CASE WHEN {% condition event_4 %} ${event_type} {% endcondition %} THEN ${session.id} END)
+
+
+# SETS #
+
+  sets:
+    count_drill:
+      - event_id
+      - event_type
+      - user.domain_user_id
+      - user.id
+      - collector_time
 
