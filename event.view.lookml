@@ -110,6 +110,11 @@
 
   - dimension: user.domain_user_id
     sql: ${TABLE}.domain_userid
+  
+  - dimension: domain_user_id
+    sql: ${TABLE}.domain_userid
+    hidden: true
+    
 
   - dimension: user.id
     sql: ${TABLE}.user_id
