@@ -36,6 +36,7 @@
           , start_at
           , least(last_event_at + interval '1 minute', lead(start_at) over (partition by domain_userid order by domain_sessionidx)) as end_at
           , number_of_events
+          , time_engaged_with_minutes
           , b.*
       from sessions_pre
       inner join ${session_facts.SQL_TABLE_NAME}  as b
