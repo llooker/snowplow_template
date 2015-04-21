@@ -1,3 +1,7 @@
+# This is a pre-processing table that is used to build the session table.
+# It is not used for analysis and is reaped within one hour after the session table is complete.
+# Authors: Erin Franz (erin@looker.com), Kevin Marr (marr@looker.com)
+
 - view: session_prep
   derived_table:
   

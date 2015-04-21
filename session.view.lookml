@@ -1,3 +1,6 @@
+# View for the session table (PDT). This table uses session_prep during its build process.
+# Authors: Erin Franz (erin@looker.com), Kevin Marr (marr@looker.com)
+
 - view: session
   derived_table:
   

@@ -1,6 +1,5 @@
-# Core view for the atomic.events table.
+# View for the atomic.events table.
 # Authors: Kevin Marr (marr@looker.com), Spencer Wanlass (swanlass@looker.com), Erin Franz (erin@looker.com)
-# v1.0
 
 - view: event
   sql_table_name: atomic.events
