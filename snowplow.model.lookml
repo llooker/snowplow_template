@@ -4,7 +4,7 @@
 - include: "*.dashboard.lookml"  # include all the dashboards
 
 - explore: event
-  sql_always_where: ${domain_user_id} is not null
+  sql_always_where: ${event.domain_user_id} is not null
   joins:
     - join: session
       type: inner

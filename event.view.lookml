@@ -1,6 +1,5 @@
 # Core view for the atomic.events table.
 # Authors: Kevin Marr (marr@looker.com), Spencer Wanlass (swanlass@looker.com), Erin Franz (erin@looker.com)
-# Last Updated: 4/6/15
 # v1.0
 
 - view: event
@@ -8,7 +7,7 @@
   fields:
   
 
-# COMMON FIELDS #
+# Common Fields #
 
   - dimension: app_id
     sql: ${TABLE}.app_id
@@ -17,7 +16,7 @@
     sql: ${TABLE}.platform
 
 
-# TIME FIELDS #
+# Time Fields #
 
   - dimension_group: collector
     type: time
@@ -53,7 +52,7 @@
     sql: ${TABLE}.refr_dvce_tstamp
 
 
-# EVENT FIELDS #
+# Event Fields #
 
   - dimension: event
     sql: ${TABLE}.event
@@ -79,7 +78,7 @@
     drill_fields: count_drill*
 
 
-# SNOWPLOW VERSION FIELDS #
+# Snowplow Version Fields #
 
   - dimension: version.collector
     sql: ${TABLE}.v_collector
@@ -97,7 +96,7 @@
     sql: ${TABLE}.etl_tags
 
 
-# USER FIELDS #
+# User Fields #
 
   - dimension: domain_session_index
     type: number
@@ -107,14 +106,13 @@
   - dimension: domain_session_id
     hidden: true
     sql: ${TABLE}.domain_sessionid
+  
+  - dimension: domain_user_id
+    hidden: true
+    sql: ${TABLE}.domain_userid
 
   - dimension: user.domain_user_id
     sql: ${TABLE}.domain_userid
-  
-  - dimension: domain_user_id
-    sql: ${TABLE}.domain_userid
-    hidden: true
-    
 
   - dimension: user.id
     sql: ${TABLE}.user_id
@@ -131,7 +129,7 @@
     sql: ${count}::float / NULLIF(${user.count}, 0)
 
 
-# DEVICE AND OPERATING SYSTEM FIELDS #
+# Device and Operating System Fields #
 
   - dimension: device.is_mobile
     type: yesno
@@ -161,7 +159,7 @@
     sql: ${TABLE}.os_name
 
 
-# LOCATION FIELDS #
+# Location Fields #
 
   - dimension: location.city
     sql: ${TABLE}.geo_city
@@ -188,7 +186,7 @@
     sql: ${TABLE}.geo_zipcode
 
 
-# IP FIELDS #
+# IP Fields #
 
   - dimension: ip.domain
     sql: ${TABLE}.ip_domain
@@ -203,7 +201,7 @@
     sql: ${TABLE}.ip_organization
 
 
-# PAGE FIELDS #
+# Page Fields #
 
   - dimension: page.referrer
     sql: ${TABLE}.page_referrer
@@ -265,7 +263,7 @@
     sql: ${TABLE}.refr_domain_userid
 
 
-# DOCUMENT FIELDS #
+# Document Fields #
 
   - dimension: document.charset
     sql: ${TABLE}.doc_charset
@@ -279,7 +277,7 @@
     sql: ${TABLE}.doc_width
 
 
-# MARKETING/SOURCE FIELDS #
+# Marketing/Source Fields #
 
   - dimension: marketing.campaign
     sql: ${TABLE}.mkt_campaign
@@ -303,7 +301,7 @@
     sql: ${TABLE}.mkt_network
 
 
-# BROWSER FIELDS #
+# Browser Fields #
 
   - dimension: browser.user_fingerprint
     sql: ${TABLE}.user_fingerprint
@@ -388,7 +386,7 @@
     sql: ${TABLE}.br_viewwidth
 
 
-# PAGE PING FIELDS #
+# Page Ping Fields #
 
   - dimension: page_ping.x_offset_max
     type: int
@@ -407,7 +405,7 @@
     sql: ${TABLE}.pp_yoffset_min
 
 
-# TRANSACTION FIELDS #
+# Transaction Fields #
 
   - dimension: transaction_item.category
     sql: ${TABLE}.ti_category
@@ -460,7 +458,7 @@
     sql: ${TABLE}.tr_total
 
 
-# CUSTOM STRUCTURED EVENTS FIELDS #
+# Custom Structured Event Fields #
 
   - dimension: structured_event.action
     sql: ${TABLE}.se_action
@@ -479,13 +477,13 @@
     sql: ${TABLE}.se_value
 
 
-# CUSTOM UNSTRUCTURED EVENTS FIELDS #
+# Custom Unstructured Event Fields #
 
   - dimension: unstructured_event.json
     sql: ${TABLE}.unstruct_event
 
 
-# FUNNEL FIELDS #
+# Funnel Fields #
   
   - filter: event_1
     suggest_explore: event
@@ -520,7 +518,7 @@
     sql: COUNT(DISTINCT CASE WHEN {% condition event_4 %} ${event_type} {% endcondition %} THEN ${user.domain_user_id} || ${domain_session_index} END)
 
 
-# SETS #
+# Sets #
 
   sets:
     count_drill:

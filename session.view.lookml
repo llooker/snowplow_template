@@ -30,23 +30,22 @@
         group by 1, 2, 3
       )
       
-      select 
-            domain_userid
-          , domain_sessionidx
-          , start_at
-          , least(last_event_at + interval '1 minute', lead(start_at) over (partition by domain_userid order by domain_sessionidx)) as end_at
-          , number_of_events
-          , time_engaged_with_minutes
-          , b.*
+      select domain_userid
+        , domain_sessionidx
+        , start_at
+        , least(last_event_at + interval '1 minute', lead(start_at) over (partition by domain_userid order by domain_sessionidx)) as end_at
+        , number_of_events
+        , time_engaged_with_minutes
+        , b.*
       from sessions_pre
-      inner join ${session_facts.SQL_TABLE_NAME}  as b
-      on sessions_pre.session_pkey = b.session_pkey
+        inner join ${session_prep.SQL_TABLE_NAME} as b
+          on sessions_pre.session_pkey = b.session_pkey
 
 
   fields:
 
 
-# DIMENSIONS #
+# Basic Session Fields #
 
   - dimension: session_pkey
     primary_key: true
@@ -94,8 +93,69 @@
       new: ${domain_session_index} = 1
       returning: ${domain_session_index} > 1
       else: unknown
+      
+  - measure: count
+    type: count
+    drill_fields: count_drill*
+  
+  - measure: bounced_session_count
+    type: count
+    filter: 
+      bounced: yes
+    drill_fields: count_drill*
+  
+  - measure: bounce_rate
+    type: number
+    sql: ${bounced_session_count}::float/NULLIF(${count},0)
+
+  - measure: average_number_of_events
+    type: average
+    decimals: 2
+    sql: ${number_of_events}
+
+  - measure: average_duration_minutes
+    type: average
+    decimals: 2
+    sql: ${duration_minutes}
+
+  - measure: sessions_per_user
+    type: number
+    sql: ${count}::float/NULLIF(${user.count},0)
+    decimals: 2
+
+  - measure: user.count
+    type: count_distinct
+    sql: ${domain_user_id}
+    drill_fields: [user.domain_user_id, user.id, user.ip_address, location.city, location.country]
+  
+  - measure: average_time_engaged_minutes
+    type: average
+    sql: ${time_engaged_with_minutes}
+  
+  - measure: sessions_from_new_visitors_count
+    type: count
+    filters:
+      domain_session_index: 1
+    drill_fields: count_drill*
+  
+  - measure: sessions_from_returning_visitors_count
+    type: count
+    filter: 
+      domain_session_index: '>1'
+    drill_fields: count_drill*
+  
+  - measure: percent_new_visitor_sessions
+    type: number
+    value_format: '#.00%'
+    sql: ${sessions_from_new_visitors_count}::float/NULLIF(${count},0)
+
+  - measure: percent_returning_visitor_sessions
+    type: number
+    value_format: '#.00%'
+    sql: ${sessions_from_returning_visitors_count}::float/NULLIF(${count},0)
  
- # Geo fields #
+ 
+# Geo Fields #
   
   - dimension: geography_country
     sql: ${TABLE}.geo_country
@@ -106,7 +166,9 @@
   - dimension: geography_city
     sql: ${TABLE}.geo_city
 
-  # Landing and Exit Pages #
+
+# Landing and Exit Pages #
+  
   - dimension: landing_page_urlhost
     sql: ${TABLE}.landing_page_urlhost
 
@@ -119,7 +181,8 @@
   - dimension: exit_page_urlpath
     sql: ${TABLE}.exit_page_urlpath
 
-  # Browser Fields #
+
+# Browser Fields #
   
   - dimension: browser
     sql: ${TABLE}.br_name
@@ -179,7 +242,8 @@
     type: yesno
     sql: ${TABLE}.br_cookies
   
-    # OS fields #
+  
+# OS Fields #
     
   - dimension: operating_system
     sql: ${TABLE}.os_name
@@ -190,7 +254,8 @@
   - dimension: operating_system_manufacturer
     sql: ${TABLE}.os_manufacturer
     
-  # Device fields #
+    
+# Device Fields #
     
   - dimension: device_type
     sql: ${TABLE}.dvce_type
@@ -206,9 +271,9 @@
     sql: ${TABLE}.dvce_screenheight
     
 
-  # Referer fields (all acquisition channels) #
+# Referrer Fields (All Acquisition Channels) #
     
-  - dimension: referer_medium
+  - dimension: referrer_medium
     sql_case:
       email: ${TABLE}.refr_medium = 'email'
       search: ${TABLE}.refr_medium = 'search'
@@ -216,19 +281,20 @@
       other_website: ${TABLE}.refr_medium = 'unknown'
       else: direct
     
-  - dimension: referer_source
+  - dimension: referrer_source
     sql: ${TABLE}.refr_source
     
-  - dimension: referer_term
+  - dimension: referrer_term
     sql: ${TABLE}.refr_term
     
-  - dimension: referer_url_host
+  - dimension: referrer_url_host
     sql: ${TABLE}.refr_urlhost
   
-  - dimension: referer_url_path
+  - dimension: referrer_url_path
     sql: ${TABLE}.refr_urlpath
     
-  # MKT fields (paid acquisition channels)
+    
+# Marketing Fields (Paid Acquisition Channels)
     
   - dimension: campaign_medium
     sql: ${TABLE}.mkt_medium
@@ -246,67 +312,7 @@
     sql: ${TABLE}.mkt_content
 
 
-# MEASURES #
-    
-  - measure: count
-    type: count
-    drill_fields: count_drill*
-  
-  - measure: bounced_session_count
-    type: count
-    filter: 
-      bounced: yes
-  
-  - measure: bounce_rate
-    type: number
-    sql: ${bounced_session_count}::float/NULLIF(${count},0)
-
-  - measure: average_number_of_events
-    type: average
-    decimals: 2
-    sql: ${number_of_events}
-
-  - measure: average_duration_minutes
-    type: average
-    decimals: 2
-    sql: ${duration_minutes}
-
-  - measure: sessions_per_user
-    type: number
-    sql: ${count}::float/NULLIF(${user.count},0)
-    decimals: 2
-
-  - measure: user.count
-    type: count_distinct
-    sql: ${domain_user_id}
-    drill_fields: [user.domain_user_id, user.id, user.ip_address, location.city, location.country]
-  
-  - measure: average_time_engaged_minutes
-    type: average
-    sql: ${time_engaged_with_minutes}
-  
-  - measure: sessions_from_new_visitors_count
-    type: count
-    filters:
-      domain_session_index: 1
-  
-  - measure: sessions_from_returning_visitors_count
-    type: count
-    filter: 
-      domain_session_index: '>1'
-  
-  - measure: percent_new_visitor_sessions
-    type: number
-    value_format: '#.00%'
-    sql: ${sessions_from_new_visitors_count}::float/NULLIF(${count},0)
-
-  - measure: percent_returning_visitor_sessions
-    type: number
-    value_format: '#.00%'
-    sql: ${sessions_from_returning_visitors_count}::float/NULLIF(${count},0)
-
-
-# SETS #
+# Sets #
 
   sets:
     count_drill:
@@ -316,4 +322,5 @@
       - end_at
       - duration_minutes
       - num_events
-
+      
+      
