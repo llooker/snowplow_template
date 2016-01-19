@@ -19,17 +19,17 @@
           , domain_sessionidx
           , min(collector_tstamp) as start_at
           , max(collector_tstamp) as last_event_at
-          , min(dvce_tstamp) AS dvce_min_tstamp
-          , max(dvce_tstamp) AS dvce_max_tstamp
+          , min(dvce_created_tstamp) AS dvce_min_tstamp
+          , max(dvce_created_tstamp) AS dvce_max_tstamp
           , count(1) as number_of_events
-          , count(distinct(floor(extract(epoch from dvce_tstamp)/30)))/2::float AS time_engaged_with_minutes
-        from atomic.events
+          , count(distinct(floor(extract(epoch from dvce_created_tstamp)/30)))/2::float AS time_engaged_with_minutes
+        from demo.events
         where domain_userid is not null
           and domain_sessionidx is not null
           and domain_userid != ''
-          and dvce_tstamp IS NOT NULL
-          and dvce_tstamp > '2000-01-01' -- Prevent SQL errors
-          and dvce_tstamp < '2030-01-01' -- Prevent SQL errors
+          and dvce_created_tstamp IS NOT NULL
+          and dvce_created_tstamp > '2000-01-01' -- Prevent SQL errors
+          and dvce_created_tstamp < '2030-01-01' -- Prevent SQL errors
         group by 1, 2, 3
       )
       
