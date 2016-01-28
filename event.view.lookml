@@ -1,4 +1,4 @@
-# View for the atomic.events table.
+# View for the events table.
 # Authors: Kevin Marr (marr@looker.com), Spencer Wanlass (swanlass@looker.com), Erin Franz (erin@looker.com)
 
 - view: event
