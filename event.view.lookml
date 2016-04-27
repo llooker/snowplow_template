@@ -1,8 +1,8 @@
-# View for the atomic.events table.
+# View for the events table.
 # Authors: Kevin Marr (marr@looker.com), Spencer Wanlass (swanlass@looker.com), Erin Franz (erin@looker.com)
 
 - view: event
-  sql_table_name: atomic.events
+  sql_table_name: demo.events
   fields:
   
 
@@ -30,7 +30,7 @@
   - dimension_group: device
     type: time
     timeframes: [time, date, week, month]
-    sql: ${TABLE}.dvce_tstamp
+    sql: ${TABLE}.dvce_created_tstamp
     
   - dimension_group: device_sent
     type: time
@@ -474,12 +474,6 @@
   - dimension: structured_event.value
     type: number
     sql: ${TABLE}.se_value
-
-
-# Custom Unstructured Event Fields #
-
-  - dimension: unstructured_event.json
-    sql: ${TABLE}.unstruct_event
 
 
 # Funnel Fields #
