@@ -42,7 +42,8 @@
     timeframes: [time, date, week, month]
     sql: ${TABLE}.etl_tstamp
 
-  - dimension: operating_system.timezone
+  - dimension: os_timezone
+    group_label: "Operating System"
     sql: ${TABLE}.os_timezone
     
   - dimension_group: referrer_device
@@ -59,8 +60,8 @@
   - dimension: event_type
     sql: |
       case
-        when ${event} = 'page_view' then coalesce(${page.url}, ${page.title}, ${page.url_host}, ${page.url_scheme})
-        when ${event} = 'struct' then ${structured_event.action}
+        when ${event} = 'page_view' then coalesce(${page_url}, ${page_title}, ${page_url_host}, ${page_url_scheme})
+        when ${event} = 'struct' then ${se_action}
         else ${event}
       end
 
@@ -69,7 +70,7 @@
     sql: ${TABLE}.event_id
 
   - dimension: transaction_id
-    type: int
+    type: number
     sql: ${TABLE}.txn_id
     
   - measure: count
@@ -79,19 +80,24 @@
 
 # Snowplow Version Fields #
 
-  - dimension: version.collector
+  - dimension: collector
+    group_label: 'Version'
     sql: ${TABLE}.v_collector
 
-  - dimension: version.etl
+  - dimension: etl
+    group_label: 'Version'
     sql: ${TABLE}.v_etl
 
-  - dimension: version.tracker
+  - dimension: tracker
+    group_label: 'Version'
     sql: ${TABLE}.v_tracker
 
-  - dimension: version.name_tracker
+  - dimension: name_tracker
+    group_label: 'Version'
     sql: ${TABLE}.name_tracker
     
-  - dimension: version.etl_tags
+  - dimension: etl_tags
+    group_label: 'Version'
     sql: ${TABLE}.etl_tags
 
 
@@ -110,371 +116,478 @@
     hidden: true
     sql: ${TABLE}.domain_userid
 
-  - dimension: user.domain_user_id
-    sql: ${TABLE}.domain_userid
-
-  - dimension: user.id
+  - dimension: user_id
+    group_label: 'User'
     sql: ${TABLE}.user_id
 
-  - dimension: user.ip_address
+  - dimension: ip_address
+    group_label: 'User'
     sql: ${TABLE}.user_ipaddress
 
-  - dimension: user.network_user_id
+  - dimension: network_user_id
+    group_label: 'User'
     sql: ${TABLE}.network_userid
 
-  - measure: user.events_per_user
+  - measure: events_per_user
+    group_label: 'User'
     type: number
-    decimals: 2
     sql: ${count}::float / NULLIF(${user.count}, 0)
+    value_format_name: decimal_2
 
 
 # Device and Operating System Fields #
 
-  - dimension: device.is_mobile
+  - dimension: device_is_mobile
+    group_label: 'Device'
     type: yesno
     sql: ${TABLE}.dvce_ismobile
 
-  - dimension: device.screen_height
-    type: int
+  - dimension: device_screen_height
+    group_label: 'Device'
+    type: number
     sql: ${TABLE}.dvce_screenheight
 
-  - dimension: device.screen_width
-    type: int
+  - dimension: device_screen_width
+    group_label: 'Device'
+    type: number
     sql: ${TABLE}.dvce_screenwidth
 
-  - dimension: device.type
+  - dimension: device_type
+    group_label: 'Device'
     sql: ${TABLE}.dvce_type
 
-  - dimension: device.user_agent
+  - dimension: user_agent
+    group_label: 'Device'
     sql: ${TABLE}.useragent
 
-  - dimension: operating_system.family
+  - dimension: os_family
+    group_label: 'Operating System'
     sql: ${TABLE}.os_family
 
-  - dimension: operating_system.manufacturer
+  - dimension: os_manufacturer
+    group_label: 'Operating System'
     sql: ${TABLE}.os_manufacturer
 
-  - dimension: operating_system.name
+  - dimension: os_name
+    group_label: 'Operating System'
     sql: ${TABLE}.os_name
 
 
 # Location Fields #
 
-  - dimension: location.city
+  - dimension: city
+    group_label: 'Location'
     sql: ${TABLE}.geo_city
 
-  - dimension: location.country
+  - dimension: country
+    group_label: 'Location'
     sql: ${TABLE}.geo_country
 
-  - dimension: location.region
+  - dimension: region
+    group_label: 'Location'
     sql: ${TABLE}.geo_region
-
-  - dimension: location.region_name
+    
+  - dimension: region_name
+    group_label: 'Location'
     sql: ${TABLE}.geo_region_name
 
-  - dimension: location.latitude
+  - dimension: latitude
+    group_label: 'Location'
+    hidden: true
     sql: ${TABLE}.geo_latitude
-
-  - dimension: location.longitude
-    sql: ${TABLE}.geo_longitude
     
-  - dimension: location.timezone
+  - dimension: longitude
+    group_label: 'Location'
+    hidden: true
+    sql: ${TABLE}.geo_longitude    
+    
+  - dimension: geo_location
+    group_label: 'Location'
+    type: location
+    sql_latitude: ${latitude}
+    sql_longitude: ${longitude}
+    
+  - dimension: timezone
+    group_label: 'Location'
     sql: ${TABLE}.geo_timezone
 
-  - dimension: location.zipcode
+  - dimension: zipcode
+    group_label: 'Location'
     sql: ${TABLE}.geo_zipcode
 
 
 # IP Fields #
 
-  - dimension: ip.domain
+  - dimension: ip_domain
+    group_label: 'IP'
     sql: ${TABLE}.ip_domain
 
-  - dimension: ip.isp
+  - dimension: ip_isp
+    group_label: 'IP'
     sql: ${TABLE}.ip_isp
 
-  - dimension: ip.net_speed
+  - dimension: ip_net_speed
+    group_label: 'IP'
     sql: ${TABLE}.ip_netspeed
 
-  - dimension: ip.organization
+  - dimension: ip_organization
+    group_label: 'IP'
     sql: ${TABLE}.ip_organization
 
 
 # Page Fields #
 
-  - dimension: page.referrer
+  - dimension: page_referrer
+    group_label: 'Page'
     sql: ${TABLE}.page_referrer
 
-  - dimension: page.title
+  - dimension: page_title
+    group_label: 'Page'
     sql: ${TABLE}.page_title
 
-  - dimension: page.url
+  - dimension: page_url
+    group_label: 'Page'
     sql: ${TABLE}.page_url
 
-  - dimension: page.url_fragment
+  - dimension: page_url_fragment
+    group_label: 'Page'
     sql: ${TABLE}.page_urlfragment
 
-  - dimension: page.url_host
+  - dimension: page_url_host
+    group_label: 'Page'
     sql: ${TABLE}.page_urlhost
 
-  - dimension: page.url_path
+  - dimension: page_url_path
+    group_label: 'Page'
     sql: ${TABLE}.page_urlpath
 
-  - dimension: page.url_port
-    type: int
+  - dimension: page_url_port
+    group_label: 'Page'
+    type: number
     sql: ${TABLE}.page_urlport
 
-  - dimension: page.url_query
+  - dimension: page_url_query
+    group_label: 'Page'
     sql: ${TABLE}.page_urlquery
 
-  - dimension: page.url_scheme
+  - dimension: page_url_scheme
+    group_label: 'Page'
     sql: ${TABLE}.page_urlscheme
 
-  - dimension: page.referrer_medium
+  - dimension: referrer_medium
+    group_label: 'Page'
     sql: ${TABLE}.refr_medium
 
-  - dimension: page.referrer_source
+  - dimension: referrer_source
+    group_label: 'Page'
     sql: ${TABLE}.refr_source
 
-  - dimension: page.referrer_term
+  - dimension: referrer_term
+    group_label: 'Page'
     sql: ${TABLE}.refr_term
 
-  - dimension: page.referrer_url_fragment
+  - dimension: referrer_url_fragment
+    group_label: 'Page'
     sql: ${TABLE}.refr_urlfragment
 
-  - dimension: page.referrer_url_host
+  - dimension: referrer_url_host
+    group_label: 'Page'
     sql: ${TABLE}.refr_urlhost
 
-  - dimension: page.referrer_url_path
+  - dimension: referrer_url_path
+    group_label: 'Page'
     sql: ${TABLE}.refr_urlpath
 
-  - dimension: page.referrer_url_port
-    type: int
+  - dimension: referrer_url_port
+    group_label: 'Page'
+    type: number
     sql: ${TABLE}.refr_urlport
 
-  - dimension: page.referrer_url_query
+  - dimension: referrer_url_query
+    group_label: 'Page'
     sql: ${TABLE}.refr_urlquery
+    
 
-  - dimension: page.referrer_url_scheme
+  - dimension: referrer_url_scheme
+    group_label: 'Page'
     sql: ${TABLE}.refr_urlscheme
     
-  - dimension: page.referrer_domain_user_id
+  - dimension: referrer_domain_user_id
+    group_label: 'Page'
     sql: ${TABLE}.refr_domain_userid
 
 
 # Document Fields #
 
-  - dimension: document.charset
+  - dimension: charset
+    group_label: 'Document'
     sql: ${TABLE}.doc_charset
 
-  - dimension: document.height
-    type: int
+  - dimension: height
+    group_label: 'Document'
+    type: number
     sql: ${TABLE}.doc_height
 
-  - dimension: document.width
-    type: int
+  - dimension: width
+    group_label: 'Document'
+    type: number
     sql: ${TABLE}.doc_width
 
 
 # Marketing/Source Fields #
 
-  - dimension: marketing.campaign
+  - dimension: campaign
+    group_label: 'Marketing'
     sql: ${TABLE}.mkt_campaign
 
-  - dimension: marketing.content
+  - dimension: content
+    group_label: 'Marketing'
     sql: ${TABLE}.mkt_content
 
-  - dimension: marketing.medium
+  - dimension: medium
+    group_label: 'Marketing'
     sql: ${TABLE}.mkt_medium
 
-  - dimension: marketing.source
+  - dimension: source
+    group_label: 'Marketing'
     sql: ${TABLE}.mkt_source
 
-  - dimension: marketing.term
+  - dimension: term
+    group_label: 'Marketing'
     sql: ${TABLE}.mkt_term
 
-  - dimension: marketing.click_id
+  - dimension: click_id
+    group_label: 'Marketing'
     sql: ${TABLE}.mkt_clickid
 
-  - dimension: marketing.network
+  - dimension: network
+    group_label: 'Marketing'
     sql: ${TABLE}.mkt_network
 
 
 # Browser Fields #
 
-  - dimension: browser.user_fingerprint
+  - dimension: user_fingerprint
+    group_label: 'Browser'
     sql: ${TABLE}.user_fingerprint
 
-  - dimension: browser.connection_type
+  - dimension: connection_type
+    group_label: 'Browser'
     sql: ${TABLE}.connection_type
 
-  - dimension: browser.supports_persistent_cookies
+  - dimension: supports_persistent_cookies
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.cookie
 
-  - dimension: browser.color_depth
+  - dimension: color_depth
+    group_label: 'Browser'
     sql: ${TABLE}.br_colordepth
 
-  - dimension: browser.cookies_enabled
+  - dimension: cookies_enabled
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_cookies
 
-  - dimension: browser.family
+  - dimension: family
+    group_label: 'Browser'
     sql: ${TABLE}.br_family
 
-  - dimension: browser.features_director
+  - dimension: features_director
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_director
 
-  - dimension: browser.features_flash
+  - dimension: features_flash
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_flash
 
-  - dimension: browser.features_gears
+  - dimension: features_gears
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_gears
 
-  - dimension: browser.features_java
+  - dimension: features_java
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_java
 
-  - dimension: browser.features_pdf
+  - dimension: features_pdf
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_pdf
 
-  - dimension: browser.features_quicktime
+  - dimension: features_quicktime
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_quicktime
 
-  - dimension: browser.features_realplayer
+  - dimension: features_realplayer
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_realplayer
 
-  - dimension: browser.features_silverlight
+  - dimension: features_silverlight
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_silverlight
 
-  - dimension: browser.features_windowsmedia
+  - dimension: features_windowsmedia
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_windowsmedia
 
-  - dimension: browser.javascript_version
+  - dimension: javascript_version
+    group_label: 'Browser'
     sql: ${TABLE}.br_jsversion
     
-  - dimension: browser.language
+  - dimension: br_language
+    group_label: 'Browser'
     sql: ${TABLE}.br_lang
 
-  - dimension: browser.name
+  - dimension: br_name
+    group_label: 'Browser'
     sql: ${TABLE}.br_name
 
-  - dimension: browser.render_engine
+  - dimension: render_engine
+    group_label: 'Browser'
     sql: ${TABLE}.br_renderengine
 
-  - dimension: browser.type
+  - dimension: br_type
+    group_label: 'Browser'
     sql: ${TABLE}.br_type
 
-  - dimension: browser.version
+  - dimension: br_version
+    group_label: 'Browser'
     sql: ${TABLE}.br_version
 
-  - dimension: browser.view_height
-    type: int
+  - dimension: br_view_height
+    group_label: 'Browser'
+    type: number
     sql: ${TABLE}.br_viewheight
 
-  - dimension: browser.view_width
-    type: int
+  - dimension: br_view_width
+    group_label: 'Browser'
+    type: number
     sql: ${TABLE}.br_viewwidth
 
 
 # Page Ping Fields #
 
-  - dimension: page_ping.x_offset_max
-    type: int
+  - dimension: x_offset_max
+    group_label: 'Page Ping'
+    type: number
     sql: ${TABLE}.pp_xoffset_max
 
-  - dimension: page_ping.x_offset_min
-    type: int
+  - dimension: x_offset_min
+    group_label: 'Page Ping'
+    type: number
     sql: ${TABLE}.pp_xoffset_min
 
-  - dimension: page_ping.y_offset_max
-    type: int
+  - dimension: y_offset_max
+    group_label: 'Page Ping'
+    type: number
     sql: ${TABLE}.pp_yoffset_max
 
-  - dimension: page_ping.y_offset_min
-    type: int
+  - dimension: y_offset_min
+    group_label: 'Page Ping'
+    type: number
     sql: ${TABLE}.pp_yoffset_min
 
 
 # Transaction Fields #
 
-  - dimension: transaction_item.category
+  - dimension: ti_category
+    group_label: 'Transaction Item'
     sql: ${TABLE}.ti_category
 
-  - dimension: transaction_item.currency
+  - dimension: ti_currency
+    group_label: "Transaction Item"
     sql: ${TABLE}.ti_currency
 
-  - dimension: transaction_item.name
+  - dimension: ti_name
+    group_label: "Transaction Item"
     sql: ${TABLE}.ti_name
 
-  - dimension: transaction_item.order_id
+  - dimension: ti_order_id
+    group_label: "Transaction Item"
     sql: ${TABLE}.ti_orderid
 
-  - dimension: transaction_item.price
+  - dimension: ti_price
+    group_label: "Transaction Item"
     type: number
     sql: ${TABLE}.ti_price
 
-  - dimension: transaction_item.quantity
-    type: int
+  - dimension: ti_quantity
+    group_label: "Transaction Item"
+    type: number
     sql: ${TABLE}.ti_quantity
 
-  - dimension: transaction_item.sku
+  - dimension: ti_sku
+    group_label: "Transaction Item"
     sql: ${TABLE}.ti_sku
 
-  - dimension: transaction.affiliation
+  - dimension: tr_affiliation
+    group_label: "Transaction"
     sql: ${TABLE}.tr_affiliation
 
-  - dimension: transaction.city
+  - dimension: tr_city
+    group_label: "Transaction"
     sql: ${TABLE}.tr_city
 
-  - dimension: transaction.country
+  - dimension: tr_country
+    group_label: "Transaction"
     sql: ${TABLE}.tr_country
 
-  - dimension: transaction.orderid
+  - dimension: tr_orderid
+    group_label: "Transaction"
     sql: ${TABLE}.tr_orderid
 
-  - dimension: transaction.shipping
+  - dimension: tr_shipping
+    group_label: "Transaction"
     type: number
     sql: ${TABLE}.tr_shipping
 
-  - dimension: transaction.state
+  - dimension: tr_state
+    group_label: "Transaction"
     sql: ${TABLE}.tr_state
 
-  - dimension: transaction.tax
+  - dimension: tr_tax
+    group_label: "Transaction"
     type: number
     sql: ${TABLE}.tr_tax
 
-  - dimension: transaction.total
+  - dimension: tr_total
+    group_label: "Transaction"
     type: number
     sql: ${TABLE}.tr_total
 
 
 # Custom Structured Event Fields #
 
-  - dimension: structured_event.action
+  - dimension: se_action
+    group_label: "Structured Event"
     sql: ${TABLE}.se_action
 
-  - dimension: structured_event.category
+  - dimension: se_category
+    group_label: "Structured Event"
     sql: ${TABLE}.se_category
 
-  - dimension: structured_event.label
+  - dimension: se_label
+    group_label: "Structured Event"
     sql: ${TABLE}.se_label
 
-  - dimension: structured_event.property
+  - dimension: se_property
+    group_label: "Structured Event"
     sql: ${TABLE}.se_property
 
-  - dimension: structured_event.value
+  - dimension: se_value
+    group_label: "Structured Event"
     type: number
     sql: ${TABLE}.se_value
-
+      
+    
 
 # Funnel Fields #
   
@@ -496,19 +609,19 @@
 
   - measure: funnel.event_1_count_sessions
     type: number
-    sql: COUNT(DISTINCT CASE WHEN {% condition event_1 %} ${event_type} {% endcondition %} THEN ${user.domain_user_id} || ${domain_session_index} END)
+    sql: COUNT(DISTINCT CASE WHEN {% condition event_1 %} ${event_type} {% endcondition %} THEN ${domain_user_id} || ${domain_session_index} END)
 
   - measure: funnel.event_2_count_sessions
     type: number
-    sql: COUNT(DISTINCT CASE WHEN {% condition event_2 %} ${event_type} {% endcondition %} THEN ${user.domain_user_id} || ${domain_session_index} END)
+    sql: COUNT(DISTINCT CASE WHEN {% condition event_2 %} ${event_type} {% endcondition %} THEN ${domain_user_id} || ${domain_session_index} END)
 
   - measure: funnel.event_3_count_sessions
     type: number
-    sql: COUNT(DISTINCT CASE WHEN {% condition event_3 %} ${event_type} {% endcondition %} THEN ${user.domain_user_id} || ${domain_session_index} END)
+    sql: COUNT(DISTINCT CASE WHEN {% condition event_3 %} ${event_type} {% endcondition %} THEN ${domain_user_id} || ${domain_session_index} END)
 
   - measure: funnel.event_4_count_sessions
     type: number
-    sql: COUNT(DISTINCT CASE WHEN {% condition event_4 %} ${event_type} {% endcondition %} THEN ${user.domain_user_id} || ${domain_session_index} END)
+    sql: COUNT(DISTINCT CASE WHEN {% condition event_4 %} ${event_type} {% endcondition %} THEN ${domain_user_id} || ${domain_session_index} END)
 
 
 # Sets #
@@ -520,4 +633,5 @@
       - user.domain_user_id
       - user.id
       - collector_time
+
 

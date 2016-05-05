@@ -182,18 +182,18 @@
 
   - measure: average_number_of_events
     type: average
-    decimals: 2
     sql: ${number_of_events}
+    value_format_name: decimal_2
 
   - measure: average_duration_minutes
     type: average
-    decimals: 2
+    value_format_name: decimal_2
     sql: ${duration_minutes}
 
   - measure: sessions_per_user
     type: number
     sql: ${count}::float/NULLIF(${user.count},0)
-    decimals: 2
+    value_format_name: decimal_2
 
   - measure: user.count
     type: count_distinct
@@ -230,12 +230,15 @@
 # Geo Fields #
   
   - dimension: geography_country
+    group_label: 'Geography'
     sql: ${TABLE}.geo_country
 
   - dimension: geography_region
+    group_label: 'Geography'
     sql: ${TABLE}.geo_region
 
   - dimension: geography_city
+    group_label: 'Geography'
     sql: ${TABLE}.geo_city
 
 
@@ -257,60 +260,76 @@
 # Browser Fields #
   
   - dimension: browser
+    group_label: 'Browser'
     sql: ${TABLE}.br_name
   
   - dimension: browser_family
+    group_label: 'Browser'
     sql: ${TABLE}.br_family
 
   - dimension: browser_version
+    group_label: 'Browser'
     sql: ${TABLE}.br_version
     
   - dimension: browser_type
+    group_label: 'Browser'
     sql: ${TABLE}.br_type
     
   - dimension: browser_renderengine
+    group_label: 'Browser'
     sql: ${TABLE}.br_renderengine
     
   - dimension: browser_language
+    group_label: 'Browser'
     sql: ${TABLE}.br_lang
     
   - dimension: browser_has_director_plugin
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_director
     
   - dimension: browser_has_flash_plugin
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_flash
     
   - dimension: browser_has_gears_plugin
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_gears
     
   - dimension: browser_has_java_plugin
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_java
     
   - dimension: browser_has_pdf_plugin
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_pdf
     
   - dimension: browser_has_quicktime_plugin
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_quicktime
     
   - dimension: browser_has_realplayer_plugin
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_realplayer
     
   - dimension: browser_has_silverlight_plugin
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_silverlight
     
   - dimension: browser_has_windowsmedia_plugin
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_features_windowsmedia
     
   - dimension: browser_supports_cookies
+    group_label: 'Browser'
     type: yesno
     sql: ${TABLE}.br_cookies
   
@@ -318,34 +337,42 @@
 # OS Fields #
     
   - dimension: operating_system
+    group_label: 'OS'
     sql: ${TABLE}.os_name
     
   - dimension: operating_system_family
+    group_label: 'OS'
     sql: ${TABLE}.os_family
     
   - dimension: operating_system_manufacturer
+    group_label: 'OS'
     sql: ${TABLE}.os_manufacturer
     
     
 # Device Fields #
     
   - dimension: device_type
+    group_label: 'Device'
     sql: ${TABLE}.dvce_type
     
   - dimension: device_is_mobile
+    group_label: 'Device'
     type: yesno
     sql: ${TABLE}.dvce_ismobile
     
   - dimension: device_screen_width
+    group_label: 'Device'
     sql: ${TABLE}.dvce_screenwidth
     
   - dimension: device_screen_height
+    group_label: 'Device'
     sql: ${TABLE}.dvce_screenheight
     
 
 # Referrer Fields (All Acquisition Channels) #
     
   - dimension: referrer_medium
+    group_label: 'Referrer'
     sql_case:
       email: ${TABLE}.refr_medium = 'email'
       search: ${TABLE}.refr_medium = 'search'
@@ -354,33 +381,42 @@
       else: direct
     
   - dimension: referrer_source
+    group_label: 'Referrer'
     sql: ${TABLE}.refr_source
     
   - dimension: referrer_term
+    group_label: 'Referrer'
     sql: ${TABLE}.refr_term
     
   - dimension: referrer_url_host
+    group_label: 'Referrer'
     sql: ${TABLE}.refr_urlhost
   
   - dimension: referrer_url_path
+    group_label: 'Referrer'
     sql: ${TABLE}.refr_urlpath
     
     
 # Marketing Fields (Paid Acquisition Channels)
     
   - dimension: campaign_medium
+    group_label: 'Marketing'
     sql: ${TABLE}.mkt_medium
   
   - dimension: campaign_source
+    group_label: 'Marketing'
     sql: ${TABLE}.mkt_source
   
   - dimension: campaign_term
+    group_label: 'Marketing'
     sql: ${TABLE}.mkt_term
   
   - dimension: campaign_name
+    group_label: 'Marketing'
     sql: ${TABLE}.mkt_campaign
 
   - dimension: campaign_content
+    group_label: 'Marketing'
     sql: ${TABLE}.mkt_content
 
 
