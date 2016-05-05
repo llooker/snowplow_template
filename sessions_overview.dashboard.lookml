@@ -18,7 +18,7 @@
   - name: date
     title: Date
     type: date_filter
-    default_value: 90 Days
+    default_value: 2015
 
   - name: event_1
     type: field_filter
